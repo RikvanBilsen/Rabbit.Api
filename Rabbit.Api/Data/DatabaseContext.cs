@@ -9,6 +9,6 @@ namespace Rabbit.Api.Data
         {
         }
 
-        public required DbSet<Post> Posts { get; set; } 
+        public  DbSet<Post> Posts { get; set; } 
     }
 }
