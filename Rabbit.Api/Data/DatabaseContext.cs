@@ -10,5 +10,10 @@ namespace Rabbit.Api.Data
         }
 
         public  DbSet<Post> Posts { get; set; } 
+        public DbSet<User> Users { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Vote> Votes { get; set; }
+        public DbSet<Community> Communities { get; set; }
+
     }
 }
