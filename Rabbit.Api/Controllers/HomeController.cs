@@ -24,6 +24,21 @@ namespace Rabbit.Api.Controllers
             return Ok(posts);
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Post>> GetPost(int id)
+        {
+            var post = await _context.Posts
+                .Include(p => p.User) 
+                .FirstOrDefaultAsync(p => p.PostId == id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(post); 
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreatePost([FromBody] Post post)
         {

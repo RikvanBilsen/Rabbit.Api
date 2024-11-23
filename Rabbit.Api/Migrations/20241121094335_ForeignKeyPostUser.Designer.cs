@@ -12,8 +12,8 @@ using Rabbit.Api.Data;
 namespace Rabbit.Api.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241119140518_ModelsAdded")]
-    partial class ModelsAdded
+    [Migration("20241121094335_ForeignKeyPostUser")]
+    partial class ForeignKeyPostUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,22 +40,7 @@ namespace Rabbit.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ParentCommentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("CommentId");
-
-                    b.HasIndex("ParentCommentId");
-
-                    b.HasIndex("PostId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Comments");
                 });
@@ -76,12 +61,7 @@ namespace Rabbit.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CreatorId")
-                        .HasColumnType("int");
-
                     b.HasKey("CommunityId");
-
-                    b.HasIndex("CreatorId");
 
                     b.ToTable("Communities");
                 });
@@ -97,9 +77,6 @@ namespace Rabbit.Api.Migrations
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CommunityId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("LastEdited")
                         .HasColumnType("datetime2");
@@ -119,8 +96,6 @@ namespace Rabbit.Api.Migrations
 
                     b.HasKey("PostId");
 
-                    b.HasIndex("CommunityId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Posts");
@@ -133,9 +108,6 @@ namespace Rabbit.Api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<int?>("CommunityId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -150,8 +122,6 @@ namespace Rabbit.Api.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("CommunityId");
-
                     b.ToTable("Users");
                 });
 
@@ -163,142 +133,28 @@ namespace Rabbit.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PostId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Value")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("PostId");
-
-                    b.HasIndex("UserId");
-
                     b.ToTable("Votes");
                 });
 
-            modelBuilder.Entity("Rabbit.Api.Models.Comment", b =>
-                {
-                    b.HasOne("Rabbit.Api.Models.Comment", "ParentComment")
-                        .WithMany("Replies")
-                        .HasForeignKey("ParentCommentId");
-
-                    b.HasOne("Rabbit.Api.Models.Post", "Post")
-                        .WithMany("Comments")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Rabbit.Api.Models.User", "User")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ParentComment");
-
-                    b.Navigation("Post");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Rabbit.Api.Models.Community", b =>
-                {
-                    b.HasOne("Rabbit.Api.Models.User", "Creator")
-                        .WithMany()
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Creator");
-                });
-
             modelBuilder.Entity("Rabbit.Api.Models.Post", b =>
                 {
-                    b.HasOne("Rabbit.Api.Models.Community", "Community")
-                        .WithMany("Posts")
-                        .HasForeignKey("CommunityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Rabbit.Api.Models.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Community");
-
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Rabbit.Api.Models.User", b =>
                 {
-                    b.HasOne("Rabbit.Api.Models.Community", null)
-                        .WithMany("Users")
-                        .HasForeignKey("CommunityId");
-                });
-
-            modelBuilder.Entity("Rabbit.Api.Models.Vote", b =>
-                {
-                    b.HasOne("Rabbit.Api.Models.Comment", "Comment")
-                        .WithMany("Votes")
-                        .HasForeignKey("CommentId");
-
-                    b.HasOne("Rabbit.Api.Models.Post", "Post")
-                        .WithMany("Votes")
-                        .HasForeignKey("PostId");
-
-                    b.HasOne("Rabbit.Api.Models.User", "User")
-                        .WithMany("Votes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("Post");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Rabbit.Api.Models.Comment", b =>
-                {
-                    b.Navigation("Replies");
-
-                    b.Navigation("Votes");
-                });
-
-            modelBuilder.Entity("Rabbit.Api.Models.Community", b =>
-                {
                     b.Navigation("Posts");
-
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("Rabbit.Api.Models.Post", b =>
-                {
-                    b.Navigation("Comments");
-
-                    b.Navigation("Votes");
-                });
-
-            modelBuilder.Entity("Rabbit.Api.Models.User", b =>
-                {
-                    b.Navigation("Comments");
-
-                    b.Navigation("Posts");
-
-                    b.Navigation("Votes");
                 });
 #pragma warning restore 612, 618
         }
