@@ -35,7 +35,9 @@ namespace Rabbit.Api.Controllers
                 User = new UserDto
                 {
                     UserId = post.User.UserId,
-                    UserName = post.User.UserName
+                    UserName = post.User.UserName,
+                    Email = post.User.Email,
+                    PasswordHash = post.User.PasswordHash
                 }
             }).ToList();
 
@@ -65,7 +67,10 @@ namespace Rabbit.Api.Controllers
                 User = new UserDto
                 {
                     UserId = post.User.UserId,
-                    UserName = post.User.UserName
+                    UserName = post.User.UserName,
+                    Email = post.User.Email,
+                    PasswordHash = post.User.PasswordHash
+                    
                 }
             };
 
