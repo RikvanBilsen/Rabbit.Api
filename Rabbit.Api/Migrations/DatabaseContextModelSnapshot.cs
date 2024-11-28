@@ -122,22 +122,6 @@ namespace Rabbit.Api.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Rabbit.Api.Models.Vote", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Value")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Votes");
-                });
-
             modelBuilder.Entity("Rabbit.Api.Models.Post", b =>
                 {
                     b.HasOne("Rabbit.Api.Models.User", "User")

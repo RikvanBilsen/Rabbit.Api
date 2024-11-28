@@ -1,42 +1,75 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rabbit.Api.Data;
+using Rabbit.Api.DTOs;
 using Rabbit.Api.Models;
 
 namespace Rabbit.Api.Controllers
 {
     [ApiController]
     [Route("api/post")]
-    public class ArticleController : ControllerBase
+    public class HomeController : ControllerBase
     {
         private readonly DatabaseContext _context;
 
-        public ArticleController(DatabaseContext context)
+        public HomeController(DatabaseContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Post>>> GetAllPosts()
+        public async Task<ActionResult<IEnumerable<PostDto>>> GetAllPosts()
         {
-            var posts = await _context.Posts.ToListAsync();
+            var posts = await _context.Posts
+                .Include(p => p.User) 
+                .ToListAsync();
+            
+            var postDtos = posts.Select(post => new PostDto
+            {
+                PostId = post.PostId,
+                Title = post.Title,
+                Body = post.Body,
+                PublishDate = post.PublishDate,
+                LastEdited = post.LastEdited,
+                Tag = post.Tag,
+                User = new UserDto
+                {
+                    UserId = post.User.UserId,
+                    UserName = post.User.UserName
+                }
+            }).ToList();
 
-            return Ok(posts);
+            return Ok(postDtos);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Post>> GetPost(int id)
+        [HttpGet("{postId}")]
+        public async Task<IActionResult> GetPostById(int postId)
         {
             var post = await _context.Posts
-                .Include(p => p.User) 
-                .FirstOrDefaultAsync(p => p.PostId == id);
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.PostId == postId);
 
             if (post == null)
             {
                 return NotFound();
             }
 
-            return Ok(post); 
+            var postDto = new PostDto
+            {
+                PostId = post.PostId,
+                Title = post.Title,
+                Body = post.Body,
+                PublishDate = post.PublishDate,
+                LastEdited = post.LastEdited,
+                Tag = post.Tag,
+                User = new UserDto
+                {
+                    UserId = post.User.UserId,
+                    UserName = post.User.UserName
+                }
+            };
+
+            return Ok(postDto);
         }
 
         [HttpPost]

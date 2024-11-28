@@ -1,16 +1,13 @@
-﻿namespace Rabbit.Api.Models
+namespace Rabbit.Api.DTOs
 {
-    public class Post
+    public class PostDto
     {
-        public int PostId { get; set; }
+        public required int PostId { get; set; }
         public required string Title { get; set; }
         public required string Body { get; set; }
         public required DateTime PublishDate { get; set; } = DateTime.UtcNow;
         public DateTime? LastEdited { get; set; }
         public string? Tag { get; set; }
-
-        
-        public int UserId { get; set; }
-        public User User { get; set; }
+        public required UserDto User { get; set; }
     }
 }
