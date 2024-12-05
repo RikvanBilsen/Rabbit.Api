@@ -4,20 +4,22 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Base image for build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Rabbit.Api.csproj", "Rabbit.Api/"]
+
+# Copy the .csproj file and restore dependencies
+COPY ["Rabbit.Api.csproj", "./"]
 RUN dotnet restore "Rabbit.Api.csproj"
+
+# Copy the rest of the app and build
 COPY . .
-WORKDIR "/src/Rabbit.Api"
-RUN dotnet build "Rabbit.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src"
+RUN dotnet build "Rabbit.Api.csproj" -c Release -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "Rabbit.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
+# Base image for runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/build .
+
 ENTRYPOINT ["dotnet", "Rabbit.Api.dll"]
