@@ -4,6 +4,7 @@ using Rabbit.Api.DTOs;
 using Rabbit.Api.Models;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace Rabbit.Api.Controllers
 {
@@ -25,8 +26,7 @@ namespace Rabbit.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            // Hash the password manually
+            
             var passwordHash = HashPassword(userDto.PasswordHash);
 
             var user = new User
@@ -42,8 +42,7 @@ namespace Rabbit.Api.Controllers
 
             return CreatedAtAction(nameof(Register), new { id = user.UserId }, user);
         }
-
-        // Simple SHA256 password hashing method
+        
         private string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())
@@ -51,6 +50,30 @@ namespace Rabbit.Api.Controllers
                 var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return Convert.ToBase64String(bytes);
             }
+        }
+        
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
+
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Invalid email or password" });
+            }
+
+            var hashedPassword = HashPassword(loginDto.Password);
+            if (user.PasswordHash != hashedPassword)
+            {
+                return Unauthorized(new { message = "Invalid email or password" });
+            }
+            
+            return Ok(new { message = "Login successful", userId = user.UserId });
         }
     }
 }

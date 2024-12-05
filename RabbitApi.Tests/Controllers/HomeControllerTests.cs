@@ -7,9 +7,10 @@ using Xunit;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Rabbit.Api.Tests
+namespace RabbitApi.Tests.Controllers
 {
-    public class ArticleControllerTests
+    public class HomeControllerTests
     {
+        
     }
 }
