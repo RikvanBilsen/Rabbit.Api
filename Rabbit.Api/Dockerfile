@@ -7,8 +7,8 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Rabbit.Api/Rabbit.Api.csproj", "Rabbit.Api/"]
-RUN dotnet restore "Rabbit.Api/Rabbit.Api.csproj"
+COPY ["Rabbit.Api.csproj", "Rabbit.Api/"]
+RUN dotnet restore "Rabbit.Api.csproj"
 COPY . .
 WORKDIR "/src/Rabbit.Api"
 RUN dotnet build "Rabbit.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
