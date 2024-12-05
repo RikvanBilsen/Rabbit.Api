@@ -30,6 +30,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./Rabbit.Api
-          file: ./Dockerfile
+          file: ./Rabbit.Api/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/rabbit-api:latest
